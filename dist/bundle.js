@@ -213,7 +213,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
 	      } else if (invoker === 'syncState') {
 	        data = options.asArray === true ? _toArray(data) : data;
-	        options.reactSetState.call(options.context, _defineProperty({}, options.state, data));
+	        options.reactSetState.call(options.context, _defineProperty({}, options.state, data), options.then);
 	      } else if (invoker === 'bindToState') {
 	        var newState = {};
 	        options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
@@ -260,13 +260,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var ref = new Firebase(baseUrl + '/' + endpoint);
 	    _firebaseRefsMixin(endpoint, 'syncState', ref);
 	    _addListener(endpoint, 'syncState', options, ref);
-	    options.context.setState = function (data) {
+	    options.context.setState = function (data, cb) {
 	      for (var key in data) {
 	        if (data.hasOwnProperty(key)) {
 	          if (states.indexOf(key) !== -1) {
 	            _updateSyncState.call(this, ref, data[key], key);
 	          } else {
-	            options.reactSetState.call(options.context, data);
+	            options.reactSetState.call(options.context, data, cb);
 	          }
 	        }
 	      }
