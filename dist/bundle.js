@@ -256,6 +256,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    optionValidators.context(options);
 	    optionValidators.state(options);
 	    states.push(options.state);
+	    console.log(states);
 	    options.queries && optionValidators.query(options);
 	    if (_sync.called !== true) {
 	      _sync.reactSetState = options.context.setState;
