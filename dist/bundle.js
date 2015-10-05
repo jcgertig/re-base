@@ -64,8 +64,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var baseUrl = '';
 	  var rebase;
 	  var states = [];
-	  var firebaseRefs = {};
-	  var firebaseListeners = {};
+	  var firebaseRefs = [];
+	  var firebaseListeners = [];
 
 	  var optionValidators = {
 	    notObject: function notObject(options) {
@@ -194,7 +194,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _firebaseRefsMixin(endpoint, invoker, ref) {
 	    if (!_isObject(firebaseRefs[endpoint])) {
-	      firebaseRefs[endpoint] = _defineProperty({}, invoker, ref.ref());
+	      firebaseRefs[endpoint] = {};
+	      firebaseRefs[endpoint][invoker] = ref.ref();
 	      firebaseListeners[endpoint] = {};
 	    } else if (!firebaseRefs[endpoint][invoker]) {
 	      firebaseRefs[endpoint][invoker] = ref.ref();

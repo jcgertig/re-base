@@ -4,8 +4,8 @@ module.exports = (function(){
   var baseUrl = '';
   var rebase;
   var states = [];
-  var firebaseRefs = {};
-  var firebaseListeners = {};
+  var firebaseRefs = [];
+  var firebaseListeners = [];
 
   var optionValidators = {
     notObject(options){
@@ -134,9 +134,8 @@ module.exports = (function(){
 
   function _firebaseRefsMixin(endpoint, invoker, ref){
     if(!_isObject(firebaseRefs[endpoint])){
-      firebaseRefs[endpoint] = {
-        [invoker]: ref.ref()
-      };
+      firebaseRefs[endpoint] = {};
+      firebaseRefs[endpoint][invoker] = ref.ref();
       firebaseListeners[endpoint] = {};
     } else if(!firebaseRefs[endpoint][invoker]){
       firebaseRefs[endpoint][invoker] = ref.ref();
@@ -153,12 +152,12 @@ module.exports = (function(){
       if(invoker === 'listenTo'){
         options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
       } else if(invoker === 'syncState'){
-          data = options.asArray === true ? _toArray(data) : data;
-          options.reactSetState.call(options.context, {[options.state]: data});
+        data = options.asArray === true ? _toArray(data) : data;
+        options.reactSetState.call(options.context, {[options.state]: data});
       } else if(invoker === 'bindToState') {
-          var newState = {};
-          options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
-          _setState.call(options.context, newState);
+        var newState = {};
+        options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
+        _setState.call(options.context, newState);
       }
     });
   };
