@@ -153,7 +153,7 @@ module.exports = (function(){
         options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
       } else if(invoker === 'syncState'){
         data = options.asArray === true ? _toArray(data) : data;
-        options.reactSetState.call(options.context, {[options.state]: data}, options.then);
+        options.reactSetState.call(options.context, {[options.state]: data});
       } else if(invoker === 'bindToState') {
         var newState = {};
         options.asArray === true ? newState[options.state] = _toArray(data) : newState[options.state] = data;
@@ -174,13 +174,20 @@ module.exports = (function(){
     return  _returnRef(endpoint, invoker);
   };
 
-  function _updateSyncState(ref, data, key){
+  function _updateSyncState(ref, data, key, cb){
     if(_isObject(data)) {
       for(var prop in data){
-        _updateSyncState(ref.child(prop), data[prop], prop);
+        _updateSyncState(ref.child(prop), data[prop], prop, function(){
+          if (cb) {
+            cb();
+          }
+        });
       }
     } else {
       ref.set(data);
+      if (cb) {
+        cb();
+      }
     }
   };
 
@@ -204,7 +211,7 @@ module.exports = (function(){
       for (var key in data) {
         if (data.hasOwnProperty(key)){
           if (states.indexOf(key) !== -1) {
-            _updateSyncState.call(this, ref, data[key], key);
+            _updateSyncState.call(this, ref, data[key], key, cb);
           } else {
             options.reactSetState.call(options.context, data, cb);
           }
