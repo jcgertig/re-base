@@ -63,6 +63,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var baseUrl = '';
 	  var rebase;
+	  var states = [];
 	  var firebaseRefs = {};
 	  var firebaseListeners = {};
 
@@ -148,7 +149,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, 'INVALID_URL');
+	      _throwError(errorMsg, "INVALID_URL");
 	    }
 	  };
 
@@ -166,7 +167,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    if (typeof errorMsg !== 'undefined') {
-	      _throwError(errorMsg, 'INVALID_ENDPOINT');
+	      _throwError(errorMsg, "INVALID_ENDPOINT");
 	    }
 	  };
 
@@ -198,7 +199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else if (!firebaseRefs[endpoint][invoker]) {
 	      firebaseRefs[endpoint][invoker] = ref.ref();
 	    } else {
-	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, 'INVALID_ENDPOINT');
+	      _throwError('Endpoint (' + endpoint + ') already has listener ' + invoker, "INVALID_ENDPOINT");
 	    }
 	  };
 
@@ -206,7 +207,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ref = _addQueries(ref, options.queries);
 	    firebaseListeners[endpoint][invoker] = ref.on('value', function (snapshot) {
 	      var data = snapshot.val();
-	      data = data === null ? (options.asArray === true ? [] : {}) : data;
+	      data = data === null ? options.asArray === true ? [] : {} : data;
 	      if (invoker === 'listenTo') {
 	        options.asArray === true ? options.then.call(options.context, _toArray(data)) : options.then.call(options.context, data);
 	      } else if (invoker === 'syncState') {
@@ -246,6 +247,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _validateEndpoint(endpoint);
 	    optionValidators.context(options);
 	    optionValidators.state(options);
+	    states.push(options.state);
 	    options.queries && optionValidators.query(options);
 	    if (_sync.called !== true) {
 	      _sync.reactSetState = options.context.setState;
@@ -260,7 +262,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    options.context.setState = function (data) {
 	      for (var key in data) {
 	        if (data.hasOwnProperty(key)) {
-	          if (key === options.state) {
+	          if (states.indexOf(key) !== -1) {
 	            _updateSyncState.call(this, ref, data[key], key);
 	          } else {
 	            options.reactSetState.call(options.context, data);
@@ -305,9 +307,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _removeBinding(refObj) {
 	    _validateEndpoint(refObj.endpoint);
-	    if (typeof firebaseRefs[refObj.endpoint][refObj.method] === 'undefined') {
+	    if (typeof firebaseRefs[refObj.endpoint][refObj.method] === "undefined") {
 	      var errorMsg = 'Unexpected value for endpoint. ' + refObj.endpoint + ' was either never bound or has already been unbound.';
-	      _throwError(errorMsg, 'UNBOUND_ENDPOINT_VARIABLE');
+	      _throwError(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
 	    }
 	    firebaseRefs[refObj.endpoint][refObj.method].off('value', firebaseListeners[refObj.endpoint][refObj.method]);
 	    delete firebaseRefs[refObj.endpoint][refObj.method];

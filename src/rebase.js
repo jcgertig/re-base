@@ -3,6 +3,7 @@ module.exports = (function(){
 
   var baseUrl = '';
   var rebase;
+  var states = [];
   var firebaseRefs = {};
   var firebaseListeners = {};
 
@@ -188,6 +189,7 @@ module.exports = (function(){
     _validateEndpoint(endpoint);
     optionValidators.context(options);
     optionValidators.state(options);
+    states.push(options.state);
     options.queries && optionValidators.query(options);
     if(_sync.called !== true){
       _sync.reactSetState = options.context.setState;
@@ -202,8 +204,8 @@ module.exports = (function(){
     options.context.setState = function (data) {
       for (var key in data) {
         if(data.hasOwnProperty(key)){
-          if (key === options.state) {
-            _updateSyncState.call(this, ref, data[key], key)
+          if (states.indexOf(key) !== -1) {
+            _updateSyncState.call(this, ref, data[key], key);
          } else {
             options.reactSetState.call(options.context, data);
          }
